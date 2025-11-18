@@ -4,7 +4,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Button, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import useUserPut from '../../data/user-put';
+import useUserPut from '../data/user-put';
 
 export default function SettingsScreen() {
     const params = useLocalSearchParams();

@@ -23,4 +23,5 @@ const fetcher = async (url: string, options: RequestInit = {}) => {
   }
 };
 
+
 export default fetcher;
