@@ -1,9 +1,11 @@
+// ...existing code...
 import fetcher from "@/data/_fetcher";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useFocusEffect, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, Alert, Image } from "react-native";
+import { Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
+// ...existing code...
 
 export default function OverviewScreen() {
   const router = useRouter();
@@ -89,51 +91,28 @@ export default function OverviewScreen() {
   };
 
   return (
+
+  <View style={{ flex: 1, backgroundColor: '#FAFDFF' }}>
+    
+    {/* BLUE SHAPE OUTSIDE SAFEAREA */}
+    <View style={styles.heroContainer}>
+      <Image source={require('../assets/images/shapedark.png')} style={styles.shapedark} resizeMode="contain" />
+
+      <Image source={require('../assets/images/links.png')} style={styles.shapeLeft} resizeMode="contain" />
+      <Image source={require('../assets/images/rechts.png')} style={styles.shapeRight} resizeMode="contain" />
+      <Image source={require('../assets/images/orkaatje.png')} style={styles.orkaImg} resizeMode="contain" />
+      <Image source={require('../assets/images/bubbels.png')} style={styles.secondImg} resizeMode="contain" />
+      <Image source={require('../assets/images/bubbels2.png')} style={styles.thirdImg} resizeMode="contain" />
+    </View>
+
+    {/* ALL CONTENT INSIDE SAFE AREA */}
     <SafeAreaView style={styles.container}>
-       {/* TOP BLUE SHAPE + ORKA IMAGE */}
-            <View style={styles.heroContainer}>
-      
-       
-        {/* Second Shape */}
-        <Image
-          source={require('../assets/images/links.png')}
-          style={styles.shapeLeft}
-          resizeMode="contain"
-        />
-      
-        {/* Third Shape */}
-       <Image
-          source={require('../assets/images/rechts.png')}
-          style={styles.shapeRight}
-          resizeMode="contain"
-        />
-        {/* First Image */}
-        <Image
-          source={require('../assets/images/orkaatje.png')}
-          style={styles.orkaImg}
-          resizeMode="contain"
-        />
-      
-        {/* Second Image */}
-        <Image
-          source={require('../assets/images/bubbels.png')}
-          style={styles.secondImg}
-          resizeMode="contain"
-        />
-      
-        {/* Third Image */}
-        <Image
-          source={require('../assets/images/bubbels2.png')}
-          style={styles.thirdImg}
-          resizeMode="contain"
-        />
-      
-      </View>
-      
-        <Text style={styles.title}>Your Cars</Text>
+      <View style={styles.headerRow}>
+        <Text style={styles.heading}>Hier vind je je auto's</Text>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
           <Text style={styles.logoutText}>Logout</Text>
         </TouchableOpacity>
+      </View>
 
       {loading ? <Text>Loading...</Text> : null}
 
@@ -144,31 +123,42 @@ export default function OverviewScreen() {
       <FlatList
         data={cars}
         keyExtractor={(item) => item._id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.circlesContainer}
         renderItem={({ item }) => (
-          <TouchableOpacity 
-            style={styles.carItem}
+          <TouchableOpacity
+            style={styles.circleWrapper}
             onPress={() => router.push(`/carDetail?carId=${item._id}` as any)}
             onLongPress={() => handleDeleteCar(item)}
           >
-            <View>
-              <Text style={styles.carText}>
-                {item.brand} {item.model}
-              </Text>
-              <Text style={styles.licensePlate}>{item.licensePlate}</Text>
+            <View style={styles.circle}>
+              <Image
+                source={require('../assets/images/carfoambox.png')}
+                style={styles.carIcon}
+                resizeMode="contain"
+              />
             </View>
-            <Text style={styles.arrow}>→</Text>
+            <Text style={styles.circleLabel}>{item.model}</Text>
+            <Text style={styles.licensePlateSmall}>{item.licensePlate}</Text>
           </TouchableOpacity>
         )}
       />
 
-      <TouchableOpacity 
-        style={styles.addButton} 
-        onPress={() => router.push("/addCar" as any)}
-      >
-        <Text style={styles.addButtonText}>+ Add Car</Text>
-      </TouchableOpacity>
+      <View style={styles.addSection}>
+        <Text style={styles.addTitle}>Nieuwe auto aanmaken</Text>
+        <TouchableOpacity
+          style={styles.addCircle}
+          onPress={() => router.push("/addCar" as any)}
+        >
+          <Text style={styles.plus}>+</Text>
+        </TouchableOpacity>
+      </View>
+
     </SafeAreaView>
-  );
+  </View>
+);
+
 }
 
 const styles = StyleSheet.create({
@@ -176,28 +166,112 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FAFDFF',
     alignItems: 'center',
-    paddingTop: 20,
   },
 
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
+ headerRow: {
+  width: '100%',
+  paddingHorizontal: 20,
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  alignItems: 'center',
+  zIndex: 10,        // <-- add this
+  position: 'relative' // required for zIndex to work
+},
+
+  heading: { 
+    fontSize: 20, 
+    fontWeight: "bold", 
+    textTransform: 'lowercase',
+    fontFamily: 'Urbanist_700Bold',
+    textAlign: 'center',
+    color: '#5C5C5C',
+    zIndex: -1,
+
   },
-  title: { fontSize: 24, fontWeight: "bold" },
   logoutButton: {
+    zIndex: 99,
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     borderRadius: 6,
-    backgroundColor: "#ff3b30",
+    backgroundColor: "#0054BB",
   },
   logoutText: {
     color: "#fff",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "600",
   },
-  emptyText: { textAlign: "center", color: "#666", marginTop: 20 },
+  emptyText: { textAlign: "center", color: "#666" },
+
+  circlesContainer: {
+
+  },
+  circleWrapper: {
+    width: 110,
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  circle: {
+    width: 110,
+    height: 110,
+    borderRadius: 300,
+    backgroundColor: '#B8E6FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    marginTop: 75,
+  },
+  carIcon: {
+    width: 100,
+    height: 100,
+  },
+  circleLabel: {
+    marginTop: 8,
+    fontSize: 14,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  licensePlateSmall: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+  },
+
+  addSection: {
+    width: '100%',
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  addTitle: {
+     fontSize: 20, 
+    fontWeight: "bold", 
+    textTransform: 'lowercase',
+    fontFamily: 'Urbanist_700Bold',
+    textAlign: 'center',
+    color: '#5C5C5C',
+    marginBottom: 30, 
+
+  },
+  addCircle: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#0054BB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  plus: {
+    color: '#fff',
+    fontSize: 36,
+    lineHeight: 36,
+    fontWeight: '700',
+  },
+
   carItem: { 
     padding: 16, 
     borderBottomWidth: 1, 
@@ -220,38 +294,42 @@ const styles = StyleSheet.create({
   
   heroContainer: {
   width: '100%',
-  height: 300, 
+  height: 200, 
   backgroundColor: '#81D3FF', 
   borderBottomRightRadius: 120, 
   justifyContent: 'center', 
   alignItems: 'center', 
-  overflow: 'hidden',
   position: 'relative',
+  marginBottom: 80,
+  pointerEvents: 'none',
 },
 
 
 
 shapeLeft: {
-  width: '80%',
+  width: '60%',
   position: 'absolute',
-  left: -30,
-  bottom: -70,
+  right: -20,
+  top: -120,
+  transform: [{ rotate: '-189deg' }],
   zIndex: 5,
 },
 
 shapeRight: {
-  width: '80%',
+  width: '100%',
   position: 'absolute',
-  right: -50,
-  top: -20,
-  zIndex: 1,
+  transform: [{ rotate: '-17deg' }],
+
+  top: -40,
+  zIndex: 4,
 
 },
 
 orkaImg: {
-  width: 220,
-  height: 220,
-  marginTop: 20,
+  width: 150,
+  height: 150,
+  bottom: -50,
+  left: -90,
   zIndex: 3,
 },
 
@@ -260,15 +338,21 @@ secondImg: {
   position: 'absolute',
   top: -20,
   left: 10,
-  zIndex: 0,
+  zIndex: 2,
 },
 
 thirdImg: {
-  width: '80%',
+  width: '0%',
   position: 'absolute',
   bottom: -25,
   right: -80,
-  zIndex: 0,
+  zIndex: 2,
 },
+shapedark: {
+   width: '100%',
+  position: 'absolute',
 
+  top: -40,
+  zIndex: 1,
+}
 });

@@ -1,12 +1,21 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Button, StyleSheet, Text, TextInput } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Image,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import fetcher from '../../data/user.login'; // or wherever your fetcher is
-import { View, Image, TouchableOpacity } from 'react-native';
-
-
+import fetcher from '../../data/user.login';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -38,84 +47,80 @@ export default function LoginScreen() {
   };
 
   return (
-   <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }} 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView 
+          contentContainerStyle={{ flexGrow: 1 }} 
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
 
-      {/* TOP BLUE SHAPE + ORKA IMAGE */}
-      <View style={styles.heroContainer}>
+          <View style={{ flex: 1, backgroundColor: '#FAFDFF' }}>
 
- 
-  {/* Second Shape */}
-  <Image
-    source={require('../../assets/images/links.png')}
-    style={styles.shapeLeft}
-    resizeMode="contain"
-  />
+            {/* BLUE SHAPE */}
+            <View style={styles.heroContainer}>
+              <Image source={require('../../assets/images/links.png')} style={styles.shapeLeft} resizeMode="contain" />
+              <Image source={require('../../assets/images/rechts.png')} style={styles.shapeRight} resizeMode="contain" />
+              <Image source={require('../../assets/images/orkaatje.png')} style={styles.orkaImg} resizeMode="contain" />
+              <Image source={require('../../assets/images/bubbels.png')} style={styles.secondImg} resizeMode="contain" />
+              <Image source={require('../../assets/images/bubbels2.png')} style={styles.thirdImg} resizeMode="contain" />
+            </View>
 
-  {/* Third Shape */}
- <Image
-    source={require('../../assets/images/rechts.png')}
-    style={styles.shapeRight}
-    resizeMode="contain"
-  />
-  {/* First Image */}
-  <Image
-    source={require('../../assets/images/orkaatje.png')}
-    style={styles.orkaImg}
-    resizeMode="contain"
-  />
+            {/* SAFE AREA CONTENT */}
+            <SafeAreaView style={styles.container}>
 
-  {/* Second Image */}
-  <Image
-    source={require('../../assets/images/bubbels.png')}
-    style={styles.secondImg}
-    resizeMode="contain"
-  />
+              <Text style={styles.title}>Welkom bij{'\n'}Orka Autowas</Text>
 
-  {/* Third Image */}
-  <Image
-    source={require('../../assets/images/bubbels2.png')}
-    style={styles.thirdImg}
-    resizeMode="contain"
-  />
+              <Text style={styles.subtitle}>
+                Log in met je gebruikersnaam en{'\n'}wachtwoord
+              </Text>
 
-</View>
+              <TextInput
+                style={styles.input}
+                placeholder="Gebruikersnaam"
+                placeholderTextColor="#0054BB"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
 
+              <TextInput
+                style={styles.input}
+                placeholder="Wachtwoord"
+                placeholderTextColor="#0054BB"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
 
-      {/* TITLE */}
-      <Text style={styles.title}>Welkom bij{'\n'}Orka Autowas</Text>
+              <TouchableOpacity
+                style={styles.loginBtn}
+                onPress={handleLogin}
+                disabled={isLoading}
+              >
+                <Text style={styles.loginText}>
+                  {isLoading ? 'Bezig...' : 'Log in  →'}
+                </Text>
+              </TouchableOpacity>
 
-      {/* SUBTITLE */}
-      <Text style={styles.subtitle}>
-        Log in met je gebruikersnaam en{'\n'}wachtwoord
-      </Text>
+              <Text
+                style={styles.switchText}
+                onPress={() => router.push('/(auth)/register')}
+              >
+                Don't have an account? Register
+              </Text>
 
-      {/* INPUTS */}
-      <TextInput
-        style={styles.input}
-        placeholder="Gebruikersnaam"
-        placeholderTextColor="#0054BB"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address" 
-        autoCapitalize="none"
-      />
+            </SafeAreaView>
+          </View>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Wachtwoord"
-         placeholderTextColor="#0054BB"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-
-      />
-
-      {/* LOGIN BUTTON */}
-      <TouchableOpacity style={styles.loginBtn} onPress={handleLogin} disabled={isLoading}>
-        <Text style={styles.loginText}>{isLoading ? "Bezig..." : "Log in  →"}</Text>
-      </TouchableOpacity>
-<Text style={styles.switchText} onPress={() => router.push('/(auth)/register')}> Don't have an account? Register </Text>
-    </SafeAreaView>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -124,71 +129,65 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FAFDFF',
     alignItems: 'center',
-    paddingTop: 20,
   },
 
- heroContainer: {
-width: '100%',
-  height: 300, 
-  backgroundColor: '#81D3FF', 
-  borderBottomRightRadius: 120, 
-  justifyContent: 'center', 
-  alignItems: 'center', 
-  overflow: 'hidden',
-  position: 'relative',
-},
+  heroContainer: {
+    width: '100%',
+    height: 350,
+    backgroundColor: '#81D3FF',
+    borderBottomRightRadius: 120,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    position: 'relative',
+  },
 
+  shapeLeft: {
+    width: '80%',
+    position: 'absolute',
+    left: -30,
+    bottom: -70,
+    zIndex: 5,
+  },
 
+  shapeRight: {
+    width: '80%',
+    position: 'absolute',
+    right: -50,
+    top: -20,
+    zIndex: 1,
+  },
 
-shapeLeft: {
-  width: '80%',
-  position: 'absolute',
-  left: -30,
-  bottom: -70,
-  zIndex: 5,
-},
+  orkaImg: {
+    width: 220,
+    height: 220,
+    marginTop: 20,
+    zIndex: 3,
+  },
 
-shapeRight: {
-  width: '80%',
-  position: 'absolute',
-  right: -50,
-  top: -20,
-  zIndex: 1,
+  secondImg: {
+    width: '80%',
+    position: 'absolute',
+    top: -20,
+    left: 10,
+    zIndex: 0,
+  },
 
-},
-
-orkaImg: {
-  width: 220,
-  height: 220,
-  marginTop: 20,
-  zIndex: 3,
-},
-
-secondImg: {
-  width: '80%',
-  position: 'absolute',
-  top: -20,
-  left: 10,
-  zIndex: 0,
-},
-
-thirdImg: {
-  width: '80%',
-  position: 'absolute',
-  bottom: -25,
-  right: -80,
-  zIndex: 0,
-},
-
+  thirdImg: {
+    width: '80%',
+    position: 'absolute',
+    bottom: -25,
+    right: -80,
+    zIndex: 0,
+  },
 
   title: {
     fontSize: 28,
     fontFamily: 'Unbounded_700Bold',
     fontWeight: '700',
     textAlign: 'center',
-    
     color: '#0054BB',
-    marginTop: 26,
+    marginTop: -20,
   },
 
   subtitle: {
@@ -212,7 +211,6 @@ thirdImg: {
     marginVertical: 10,
     fontSize: 16,
   },
- 
 
   loginBtn: {
     width: '85%',
@@ -229,6 +227,7 @@ thirdImg: {
     fontSize: 18,
     fontWeight: '600',
   },
+
   switchText: {
     marginTop: 20,
     color: '#0054BB',
