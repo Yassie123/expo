@@ -1,24 +1,44 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { useFonts } from 'expo-font';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+// Urbanist
+import {
+  Urbanist_400Regular,
+  Urbanist_500Medium,
+  Urbanist_600SemiBold,
+  Urbanist_700Bold,
+} from '@expo-google-fonts/urbanist';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+// Unbounded
+import {
+  Unbounded_400Regular,
+  Unbounded_500Medium,
+  Unbounded_700Bold,
+} from '@expo-google-fonts/unbounded';
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [fontsLoaded] = useFonts({
+    Urbanist_400Regular,
+    Urbanist_500Medium,
+    Urbanist_600SemiBold,
+    Urbanist_700Bold,
+    Unbounded_400Regular,
+    Unbounded_500Medium,
+    Unbounded_700Bold,
+  });
+
+  if (!fontsLoaded) return null;
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="login" />
+      <Stack.Screen name="register" />
+      <Stack.Screen name="overviewScreen" />
+      <Stack.Screen name="addCar" />
+      <Stack.Screen name="carDetail" />
+      <Stack.Screen name="addWash" />
+      <Stack.Screen name="washDetail" />
+    </Stack>
   );
 }

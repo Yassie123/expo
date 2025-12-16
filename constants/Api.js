@@ -1,0 +1,1 @@
+export const API_URL = 'https://orka-autowas.onrender.com/api';
