@@ -1,20 +1,18 @@
 import fetcher from "@/data/_fetcher";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {Image, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 const PROGRAMS = [
-  { id: 1, name: "Pre-Wash", icon: "💧" },
-  { id: 2, name: "Soap", icon: "🧼" },
-  { id: 3, name: "Brush", icon: "🧹" },
-  { id: 4, name: "High Pressure", icon: "💨" },
-  { id: 5, name: "Wax", icon: "✨" },
-  { id: 6, name: "Rinse", icon: "🚿" },
-  { id: 7, name: "Foam", icon: "🫧" },
-  { id: 8, name: "Tire Cleaner", icon: "⚫" },
-  { id: 9, name: "Spot Free", icon: "💎" },
-  { id: 10, name: "Air Dry", icon: "🌬️" },
-  { id: 11, name: "Vacuum", icon: "🔌" },
+  { id: 1, name: "Velgen", icon: require("../assets/images/velgen.png"), iconWhite: require("../assets/images/velgenwit.png") },
+  { id: 2, name: "Schuimlans", icon: require("../assets/images/schuimlans.png"), iconWhite: require("../assets/images/schuimlanswit.png") },
+  { id: 3, name: "HP wassen", icon: require("../assets/images/hpwassen.png"), iconWhite: require("../assets/images/hpwassenwit.png") },
+  { id: 4, name: "Wax", icon: require("../assets/images/wax.png"), iconWhite: require("../assets/images/waxwit.png") },
+  { id: 5, name: "Schuimborstel", icon: require("../assets/images/schuimborstel.png"), iconWhite: require("../assets/images/schuimborstelwit.png") },
+  { id: 6, name: "HP spoelen", icon: require("../assets/images/hpwassen.png"), iconWhite: require("../assets/images/hpwassenwit.png") },
+  { id: 7, name: "Polish", icon: require("../assets/images/polish.png"), iconWhite: require("../assets/images/polishwit.png") },
+  { id: 8, name: "Vlekvrij spoelen", icon: require("../assets/images/hpwassen.png"), iconWhite: require("../assets/images/hpwassenwit.png") },
+  { id: 9, name: "Drogen", icon: require("../assets/images/drogen.png"), iconWhite: require("../assets/images/drogenwit.png") },
 ];
 
 export default function AddWashScreen() {
@@ -67,7 +65,7 @@ export default function AddWashScreen() {
 
   const handleAddWash = async () => {
     if (duration === 0) {
-      Alert.alert("No Duration", "Please start the timer before completing the wash");
+      Alert.alert("Geen tijdsduur", "Start de timer voordat je de wasbeurt afrondt.");
       return;
     }
 
@@ -75,7 +73,7 @@ export default function AddWashScreen() {
     try {
       const wash = {
         duration,
-        cost: coins * 1, // assuming €0.50 per coin
+        cost: coins * 1, // assuming €1 per coin
         programs: selectedPrograms,
       };
 
@@ -85,7 +83,7 @@ export default function AddWashScreen() {
         body: JSON.stringify(wash),
       });
 
-      Alert.alert("Success", "Wash completed and saved!");
+      Alert.alert("Gelukt", "Wasbeurt voltooid en opgeslagen!");
       router.back();
     } catch (err) {
       console.error("Error adding wash:", err);
@@ -96,120 +94,197 @@ export default function AddWashScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backText}>← Back</Text>
-      </TouchableOpacity>
-
-      <Text style={styles.title}>Car Wash Session</Text>
-
-      {/* Timer Display */}
-      <View style={styles.timerCard}>
-        <Text style={styles.timerLabel}>Duration</Text>
-        <Text style={styles.timerDisplay}>{formatTime(duration)}</Text>
-        <TouchableOpacity
-          style={[styles.timerButton, isRunning && styles.timerButtonPause]}
-          onPress={() => setIsRunning(!isRunning)}
-        >
-          <Text style={styles.timerButtonText}>{isRunning ? "⏸ Pause" : "▶ Start"}</Text>
-        </TouchableOpacity>
+    <View style={{ flex: 1, backgroundColor: '#FAFDFF' }}>
+      {/* HERO HEADER */}
+      <View style={styles.heroContainer}>
+        <Image source={require('../assets/images/shapedark.png')} style={styles.shapedark} resizeMode="contain" />
+        <Image source={require('../assets/images/links.png')} style={styles.shapeLeft} resizeMode="contain" />
+        <Image source={require('../assets/images/rechts.png')} style={styles.shapeRight} resizeMode="contain" />
+        <Image source={require('../assets/images/orkaatje.png')} style={styles.orkaImg} resizeMode="contain" />
+        <Image source={require('../assets/images/bubbels.png')} style={styles.secondImg} resizeMode="contain" />
+        <Image source={require('../assets/images/bubbels2.png')} style={styles.thirdImg} resizeMode="contain" />
       </View>
 
-      {/* Coins Counter */}
-      <View style={styles.coinsCard}>
-        <Text style={styles.coinsLabel}>Coins Inserted</Text>
-        <View style={styles.coinsRow}>
+      {/* Back button and title - FIXED */}
+      <View style={styles.sectionHeader}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButtonInline}>
+          <Text style={styles.backText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.sectionTitleInline}>Nieuwe wasbeurt</Text>
+      </View>
+
+      <ScrollView style={styles.container}>
+        {/* Timer Display */}
+        <View style={styles.timerCard}>
+          <Text style={styles.timerLabel}>Tijdsduur</Text>
+          <Text style={styles.timerDisplay}>{formatTime(duration)}</Text>
           <TouchableOpacity
-            style={styles.coinButton}
-            onPress={() => setCoins(Math.max(0, coins - 1))}
+            style={[styles.timerButton, isRunning && styles.timerButtonPause]}
+            onPress={() => setIsRunning(!isRunning)}
           >
-            <Text style={styles.coinButtonText}>−</Text>
-          </TouchableOpacity>
-          <View style={styles.coinsDisplay}>
-            <Text style={styles.coinsNumber}>{coins}</Text>
-            <Text style={styles.coinsCost}>€{(coins * 1).toFixed(2)}</Text>
-          </View>
-          <TouchableOpacity style={styles.coinButton} onPress={() => setCoins(coins + 1)}>
-            <Text style={styles.coinButtonText}>+</Text>
+            <Text style={styles.timerButtonText}>{isRunning ? "⏸ Pauze" : "▶ Start"}</Text>
           </TouchableOpacity>
         </View>
-      </View>
 
-      {/* Programs */}
-      <Text style={styles.sectionTitle}>Programs Used</Text>
-      <View style={styles.programsGrid}>
-        {PROGRAMS.map((program) => (
-          <TouchableOpacity
-            key={program.id}
-            style={[
-              styles.programButton,
-              selectedPrograms.includes(program.name) && styles.programButtonActive,
-            ]}
-            onPress={() => toggleProgram(program.name)}
-          >
-            <Text style={styles.programIcon}>{program.icon}</Text>
-            <Text
-              style={[
-                styles.programText,
-                selectedPrograms.includes(program.name) && styles.programTextActive,
-              ]}
+        {/* Coins Counter */}
+        <View style={styles.coinsCard}>
+          <Text style={styles.coinsLabel}>Muntinworp</Text>
+          <View style={styles.coinsRow}>
+            <TouchableOpacity
+              style={styles.coinButton}
+              onPress={() => setCoins(Math.max(0, coins - 1))}
             >
-              {program.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+              <Text style={styles.coinButtonText}>−</Text>
+            </TouchableOpacity>
+            <View style={styles.coinsDisplay}>
+              <Text style={styles.coinsNumber}>{coins}</Text>
+              <Text style={styles.coinsCost}>€{(coins * 1).toFixed(2)}</Text>
+            </View>
+            <TouchableOpacity style={styles.coinButton} onPress={() => setCoins(coins + 1)}>
+              <Text style={styles.coinButtonText}>+</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
 
-      {/* Complete Button */}
-      <TouchableOpacity
-        style={[styles.completeButton, loading && styles.completeButtonDisabled]}
-        onPress={handleAddWash}
-        disabled={loading}
-      >
-        <Text style={styles.completeButtonText}>
-          {loading ? "Saving..." : "✓ Complete Wash"}
-        </Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Programs */}
+        <Text style={styles.sectionTitle}>Gebruikte programma's</Text>
+        <View style={styles.programsGrid}>
+          {PROGRAMS.map((program) => (
+            <TouchableOpacity
+              key={program.id}
+              style={styles.programContainer}
+              onPress={() => toggleProgram(program.name)}
+            >
+              <View style={[
+                styles.programCircle,
+                selectedPrograms.includes(program.name) && styles.programCircleActive,
+              ]}>
+                <Image 
+                  source={selectedPrograms.includes(program.name) ? program.iconWhite : program.icon} 
+                  style={styles.programIcon} 
+                  resizeMode="contain" 
+                />
+              </View>
+              <Text style={styles.programText}>{program.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Complete Button */}
+        <TouchableOpacity
+          style={[styles.completeButton, loading && styles.completeButtonDisabled]}
+          onPress={handleAddWash}
+          disabled={loading}
+        >
+          <Text style={styles.completeButtonText}>
+            {loading ? "Opslaan..." : "✓ Klaar"}
+          </Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
-  backButton: { marginBottom: 10 },
-  backText: { fontSize: 16, color: "#007bff" },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 20 },
+  container: { flex: 1, backgroundColor: "#FAFDFF" },
+  backText: { fontSize: 16, color: "#5C5C5C" },
+
+  // Hero styles
+  heroContainer: {
+    width: '100%',
+    height: 200, 
+    borderBottomRightRadius: 120, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    position: 'relative',
+    marginBottom: 80,
+  },
+  shapedark: { width: '100%', position: 'absolute', top: -40, zIndex: 1 },
+  shapeLeft: { width: '60%', position: 'absolute', right: -20, top: -120, transform: [{ rotate: '-189deg' }], zIndex: 5 },
+  shapeRight: { width: '100%', position: 'absolute', top: -40, transform: [{ rotate: '-17deg' }], zIndex: 4 },
+  orkaImg: { width: 150, height: 150, bottom: -50, left: -90, zIndex: 3 },
+  secondImg: { width: '80%', position: 'absolute', top: -20, left: 10, zIndex: 2 },
+  thirdImg: { width: '0%', position: 'absolute', bottom: -25, right: -80, zIndex: 2 },
+
+  // Header
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#FAFDFF',
+    position: 'relative',
+  },
+  backButtonInline: {
+    position: 'absolute',
+    left: 20,
+  },
+  sectionTitleInline: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#5C5C5C',
+    textAlign: 'center',
+  },
 
   // Timer
   timerCard: {
-    backgroundColor: "#f8f9fa",
+    backgroundColor: "#E3F5FF",
     borderRadius: 12,
     padding: 24,
     alignItems: "center",
     marginBottom: 16,
+    marginHorizontal: 20,
   },
-  timerLabel: { fontSize: 14, color: "#666", marginBottom: 8 },
-  timerDisplay: { fontSize: 48, fontWeight: "bold", color: "#000", marginBottom: 16 },
+  timerLabel: { 
+     fontSize: 16, 
+    fontWeight: "600", 
+    marginBottom: 8, 
+    textAlign: "center",
+    color: "#0054BB",
+    fontFamily: 'Urbanist_600SemiBold'
+  },
+  timerDisplay: { 
+    fontSize: 48, 
+    fontWeight: "bold", 
+    color: "#0054BB", 
+    marginBottom: 16,
+    fontFamily: 'Urbanist_700Bold'
+  },
   timerButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#0054BB",
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderRadius: 8,
   },
-  timerButtonPause: { backgroundColor: "#ffc107" },
-  timerButtonText: { color: "#fff", fontSize: 18, fontWeight: "600" },
+  timerButtonPause: { backgroundColor: "#0054BB" },
+  timerButtonText: { 
+    color: "#fff", 
+    fontSize: 16, 
+    fontWeight: "600",
+    fontFamily: 'Urbanist_600SemiBold'
+  },
 
   // Coins
   coinsCard: {
-    backgroundColor: "#fff3cd",
+    backgroundColor: "#E3F5FF",
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
+    marginHorizontal: 20,
   },
-  coinsLabel: { fontSize: 16, fontWeight: "600", marginBottom: 12, textAlign: "center" },
+  coinsLabel: { 
+    fontSize: 16, 
+    fontWeight: "600", 
+    marginBottom: 12, 
+    textAlign: "center",
+    color: "#0054BB",
+    fontFamily: 'Urbanist_600SemiBold'
+  },
   coinsRow: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
   coinButton: {
-    backgroundColor: "#ffc107",
+    backgroundColor: "#0054BB",
     width: 50,
     height: 50,
     borderRadius: 25,
@@ -218,43 +293,78 @@ const styles = StyleSheet.create({
   },
   coinButtonText: { fontSize: 28, color: "#fff", fontWeight: "bold" },
   coinsDisplay: { marginHorizontal: 24, alignItems: "center" },
-  coinsNumber: { fontSize: 32, fontWeight: "bold", color: "#000" },
-  coinsCost: { fontSize: 14, color: "#666", marginTop: 4 },
+  coinsNumber: { 
+    fontSize: 32, 
+    fontWeight: "bold", 
+    color: "#0054BB",
+    fontFamily: 'Urbanist_700Bold'
+  },
+  coinsCost: { 
+    fontSize: 14, 
+    color: "#0054BB", 
+    marginTop: 4,
+    fontFamily: 'Urbanist_400Regular'
+  },
 
   // Programs
-  sectionTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 12 },
+  sectionTitle: { 
+    fontSize: 20, 
+    fontWeight: "bold", 
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#0054BB',
+    marginHorizontal: 20,
+  },
   programsGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
-    marginBottom: 20,
-  },
-  programButton: {
-    width: "30%",
-    aspectRatio: 1,
-    backgroundColor: "#f8f9fa",
-    borderRadius: 12,
-    alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#e0e0e0",
+    gap: 12,
+    marginBottom: 20,
+    marginHorizontal: 20,
   },
-  programButtonActive: {
-    backgroundColor: "#007bff",
-    borderColor: "#007bff",
+  programContainer: {
+    width: 70,
+    alignItems: "center",
+    margin: 6,
   },
-  programIcon: { fontSize: 28, marginBottom: 4 },
-  programText: { fontSize: 11, fontWeight: "600", color: "#333", textAlign: "center" },
-  programTextActive: { color: "#fff" },
+  programCircle: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: "#E3F5FF",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  programCircleActive: {
+    backgroundColor: "#0054BB",
+  },
+  programIcon: { 
+    width: 32, 
+    height: 32,
+  },
+  programText: { 
+    fontSize: 9, 
+    color: "#0054BB", 
+    textAlign: "center",
+    marginTop: 4,
+  },
 
   // Complete
   completeButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#0054BB",
     padding: 18,
     borderRadius: 12,
     alignItems: "center",
     marginBottom: 30,
+    marginHorizontal: 20,
   },
   completeButtonDisabled: { backgroundColor: "#ccc" },
-  completeButtonText: { color: "#fff", fontSize: 18, fontWeight: "bold" },
+  completeButtonText: { 
+    color: "#fff", 
+    fontSize: 18, 
+    fontWeight: "bold",
+    fontFamily: 'Urbanist_700Bold'
+  },
 });

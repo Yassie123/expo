@@ -3,6 +3,17 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Alert, Image, FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
+const CAR_COLORS = {
+  white: require('../../assets/images/wit.png'),
+  black: require('../../assets/images/zwart.png'),
+  gray: require('../../assets/images/grijs.png'),
+  blue: require('../../assets/images/blauw.png'),
+  red: require('../../assets/images/rood.png'),
+  green: require('../../assets/images/green.png'),
+  yellow: require('../../assets/images/geel.png'),
+  orange: require('../../assets/images/oranje.png'),
+   brown: require('../../assets/images/bruin.png'),
+};
 
 export default function CarDetailScreen() {
   const router = useRouter();
@@ -34,21 +45,21 @@ export default function CarDetailScreen() {
 
   const handleDeleteWash = (wash) => {
     Alert.alert(
-      "Delete Wash",
-      `Delete wash from ${new Date(wash.date).toLocaleDateString()}?`,
+      "Verwijder wasbeurt",
+      `Verwijder wasbeurt van ${new Date(wash.date).toLocaleDateString()}?`,
       [
-        { text: "Cancel", style: "cancel" },
+        { text: "Annuleren", style: "cancel" },
         {
-          text: "Delete",
+          text: "Verwijderen",
           style: "destructive",
           onPress: async () => {
             try {
               await fetcher(`/cars/washes/${wash._id}`, { method: "DELETE" });
               fetchCarDetails(); // Refresh the list
-              Alert.alert("Success", "Wash deleted successfully");
+              Alert.alert("Gelukt", "Wasbeurt succesvol verwijderd!");
             } catch (err) {
-              console.error("Error deleting wash:", err);
-              Alert.alert("Error", "Failed to delete wash");
+              console.error("Error bij verwijderen wasbeurt:", err);
+              Alert.alert("Error", "Gefaald om wasbeurt te verwijderen");
             }
           }
         }
@@ -118,10 +129,12 @@ export default function CarDetailScreen() {
         </TouchableOpacity>
 
         {/* Car image floating out of the card */}
-        <Image
-          source={require('../../assets/images/carfoambox.png')}
-          style={styles.carIconBig}
-        />
+   <Image
+  source={CAR_COLORS[car.color] || require('../../assets/images/carfoambox.png')}
+  style={styles.carIconBig}
+/>
+
+
       </View>
     )}
   />
@@ -152,11 +165,10 @@ export default function CarDetailScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FAFDFF', padding: 20 },
   backButton: { marginBottom: 10 },
-  backText: { fontSize: 16, color: "#007bff" },
+  backText: { fontSize: 16, color: "#5C5C5C" },
   carHeader: { padding: 16, backgroundColor: "#f5f5f5", borderRadius: 8, marginBottom: 20 },
   title: {    fontSize: 20, 
     fontWeight: "bold", 
-    textTransform: 'lowercase',
     fontFamily: 'Urbanist_700Bold',
     textAlign: 'center',
     color: '#5C5C5C',
@@ -165,15 +177,14 @@ const styles = StyleSheet.create({
   color: { fontSize: 14, color: "#666", marginTop: 4 },
   sectionTitle: {    fontSize: 20, 
     fontWeight: "bold", 
-    textTransform: 'lowercase',
     fontFamily: 'Urbanist_700Bold',
     textAlign: 'center',
     color: '#5C5C5C',
     marginBottom: 30,  },
-  emptyText: { textAlign: "center", color: "#666", marginTop: 20 },
+  emptyText: { textAlign: "center", color: "#0054BB", marginTop: 70, marginBottom: 150 },
   washItem: { padding: 16, borderBottomWidth: 1, borderBottomColor: "#e0e0e0", flexDirection: "row", alignItems: "center", justifyContent: "space-between" },  washInfo: { fontSize: 14, color: "#666", marginTop: 4 },
-  arrow: { fontSize: 20, color: "#007bff" },
-  addButton: { marginTop: 20, padding: 16, backgroundColor: "#007bff", borderRadius: 8, alignItems: "center" },
+  arrow: { fontSize: 20, color: "#0054BB" },
+  addButton: { marginTop: 20, padding: 16, backgroundColor: "#0054BB", borderRadius: 8, alignItems: "center" },
   addButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 washCard: {
   flexDirection: 'row',
@@ -200,11 +211,12 @@ carIconBig: {
 washDateCard: {
   flex: 1,
   fontSize: 16,
-  color: '#1A4CA1',
-    fontFamily: 'Urbanist_400regular',
+  color: '#0054BB',
+  fontFamily: 'Urbanist_400regular',
   marginLeft: 120, // to give space for the floating car icon
+  
 },
-arrow: { fontSize: 20, color: '#1A4CA1', marginRight: 15 },
+arrow: { fontSize: 20, color: '#0054BB', marginRight: 15 },
 newWashContainer: {
   alignItems: 'center',
   justifyContent: 'center',
@@ -254,7 +266,6 @@ backButtonInline: {
 sectionTitleInline: {
   fontSize: 20,
   fontWeight: 'bold',
-  textTransform: 'lowercase',
   fontFamily: 'Urbanist_700Bold',
   color: '#5C5C5C',
 },

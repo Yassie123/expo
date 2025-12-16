@@ -112,7 +112,7 @@ export default function LoginScreen() {
                 style={styles.switchText}
                 onPress={() => router.push('/(auth)/register')}
               >
-                Don't have an account? Register
+                Heb je nog geen account? Registreer
               </Text>
 
             </SafeAreaView>

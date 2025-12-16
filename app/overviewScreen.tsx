@@ -6,6 +6,17 @@ import React, { useState } from "react";
 import { Alert, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 // ...existing code...
+const CAR_COLORS = {
+white: require('../assets/images/wit.png'),
+  black: require('../assets/images/zwart.png'),
+  gray: require('../assets/images/grijs.png'),
+  blue: require('../assets/images/blauw.png'),
+  red: require('../assets/images/rood.png'),
+  green: require('../assets/images/green.png'),
+  yellow: require('../assets/images/geel.png'),
+  orange: require('../assets/images/oranje.png'),
+  brown: require('../assets/images/bruin.png'),
+};
 
 export default function OverviewScreen() {
   const router = useRouter();
@@ -41,15 +52,15 @@ export default function OverviewScreen() {
 
   const handleDeleteCar = (car) => {
     Alert.alert(
-      "Delete Car",
-      `Are you sure you want to delete ${car.brand} ${car.model}?`,
+      "Verwijder auto",
+      `Ben je zeker dat je ${car.brand} ${car.model} wil verwijderen?`,
       [
         {
-          text: "Cancel",
+          text: "Annuleren",
           style: "cancel"
         },
         {
-          text: "Delete",
+          text: "Verwijderen",
           style: "destructive",
           onPress: async () => {
             try {
@@ -58,10 +69,10 @@ export default function OverviewScreen() {
               });
               // Refresh the car list
               fetchCars(userId);
-              Alert.alert("Success", "Car deleted successfully");
+              Alert.alert("Gelukt", "Auto succesvol verwijderd");
             } catch (err) {
-              console.error("Error deleting car:", err);
-              Alert.alert("Error", "Failed to delete car");
+              console.error("Error bij verwijderen van auto:", err);
+              Alert.alert("Error", "Gefaald om auto te verwijderen");
             }
           }
         }
@@ -71,15 +82,15 @@ export default function OverviewScreen() {
 
   const handleLogout = () => {
     Alert.alert(
-      "Logout",
-      "Are you sure you want to logout?",
+      "Log uit",
+      "Ben je zeker dat je wil uitloggen?",
       [
         {
-          text: "Cancel",
+          text: "Annuleren",
           style: "cancel"
         },
         {
-          text: "Logout",
+          text: "Log uit",
           style: "destructive",
           onPress: async () => {
             await AsyncStorage.removeItem("userId");
@@ -110,14 +121,14 @@ export default function OverviewScreen() {
       <View style={styles.headerRow}>
         <Text style={styles.heading}>Hier vind je je auto's</Text>
         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Text style={styles.logoutText}>Logout</Text>
+          <Text style={styles.logoutText}>Log uit</Text>
         </TouchableOpacity>
       </View>
 
-      {loading ? <Text>Loading...</Text> : null}
+      {loading ? <Text>Data laden...</Text> : null}
 
       {cars.length === 0 && !loading ? (
-        <Text style={styles.emptyText}>No cars yet. Add your first car!</Text>
+        <Text style={styles.emptyText}>Je hebt nog geen auto's aangemaakt, {"\n"} voeg je eerste toe!</Text>
       ) : null}
 
       <FlatList
@@ -133,11 +144,12 @@ export default function OverviewScreen() {
             onLongPress={() => handleDeleteCar(item)}
           >
             <View style={styles.circle}>
-              <Image
-                source={require('../assets/images/carfoambox.png')}
-                style={styles.carIcon}
-                resizeMode="contain"
-              />
+             <Image
+            source={CAR_COLORS[item.color] || require('../assets/images/carfoambox.png')}
+            style={styles.carIcon}
+            resizeMode="contain"
+            />
+
             </View>
             <Text style={styles.circleLabel}>{item.model}</Text>
             <Text style={styles.licensePlateSmall}>{item.licensePlate}</Text>
@@ -181,7 +193,6 @@ const styles = StyleSheet.create({
   heading: { 
     fontSize: 20, 
     fontWeight: "bold", 
-    textTransform: 'lowercase',
     fontFamily: 'Urbanist_700Bold',
     textAlign: 'center',
     color: '#5C5C5C',
@@ -200,7 +211,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-  emptyText: { textAlign: "center", color: "#666" },
+  emptyText: { textAlign: "center", color: "#0054BB", marginTop: 100 },
 
   circlesContainer: {
 
@@ -250,7 +261,6 @@ const styles = StyleSheet.create({
   addTitle: {
      fontSize: 20, 
     fontWeight: "bold", 
-    textTransform: 'lowercase',
     fontFamily: 'Urbanist_700Bold',
     textAlign: 'center',
     color: '#5C5C5C',
@@ -282,11 +292,11 @@ const styles = StyleSheet.create({
   },
   carText: { fontSize: 16, fontWeight: "600" },
   licensePlate: { fontSize: 14, color: "#666", marginTop: 4 },
-  arrow: { fontSize: 20, color: "#007bff" },
+  arrow: { fontSize: 20, color: "#5C5C5C" },
   addButton: {
     marginTop: 20,
     padding: 16,
-    backgroundColor: "#007bff",
+    backgroundColor: "#0054BB",
     borderRadius: 8,
     alignItems: "center",
   },

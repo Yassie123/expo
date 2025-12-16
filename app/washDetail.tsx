@@ -10,17 +10,27 @@ export default function WashDetailScreen() {
   const [loading, setLoading] = useState(true);
 
   const PROGRAM_ICONS = {
-    "Pre-Wash": "💧",
-    Soap: "🧼",
-    Brush: "🧹",
-    "High Pressure": "💨",
-    Wax: "✨",
-    Rinse: "🚿",
-    Foam: "🫧",
-    "Tire Cleaner": "⚫",
-    "Spot Free": "💎",
-    "Air Dry": "🌬️",
-    Vacuum: "🔌",
+    // Dutch names (keeping for compatibility)
+    Velgen: require("../assets/images/velgen.png"),
+    Schuimlans: require("../assets/images/schuimlans.png"),
+    "HP wassen": require("../assets/images/hpwassen.png"),
+    Wax: require("../assets/images/wax.png"),
+    Schuimborstel: require("../assets/images/schuimborstel.png"),
+    "HP spoelen": require("../assets/images/hpwassen.png"),
+    Polish: require("../assets/images/polish.png"),
+    "Vlekvrij spoelen": require("../assets/images/hpwassen.png"),
+    Drogen: require("../assets/images/drogen.png"),
+    
+    // English names from API
+    "Pre-Wash": require("../assets/images/hpwassen.png"),
+    "Soap": require("../assets/images/schuimlans.png"),
+    "Brush": require("../assets/images/schuimborstel.png"),
+    "High Pressure": require("../assets/images/hpwassen.png"),
+    "Rinse": require("../assets/images/hpwassen.png"),
+    "Foam": require("../assets/images/schuimlans.png"),
+    "Tire Cleaner": require("../assets/images/velgen.png"),
+    "Spot Free": require("../assets/images/hpwassen.png"),
+    "Air Dry": require("../assets/images/drogen.png"),
   };
 
   useEffect(() => {
@@ -44,6 +54,28 @@ export default function WashDetailScreen() {
     return `${mins}m ${secs}s`;
   };
 
+  const PROGRAM_TRANSLATIONS = {
+    "Pre-Wash": "HP wassen",
+    "Soap": "Schuimlans",
+    "Brush": "Schuimborstel",
+    "High Pressure": "HP spoelen",
+    "Wax": "Wax",
+    "Rinse": "HP spoelen",
+    "Foam": "Schuimlans",
+    "Tire Cleaner": "Velgen",
+    "Spot Free": "Vlekvrij spoelen",
+    "Air Dry": "Drogen",
+  };
+
+  const getProgramIcon = (programName) => {
+    // Return the icon if it exists, otherwise return a default
+    return PROGRAM_ICONS[programName] || PROGRAM_ICONS["HP wassen"];
+  };
+
+  const translateProgram = (programName) => {
+    return PROGRAM_TRANSLATIONS[programName] || programName;
+  };
+
   if (loading || !wash) {
     return (
       <View style={styles.container}>
@@ -64,32 +96,41 @@ export default function WashDetailScreen() {
         <Image source={require('../assets/images/bubbels2.png')} style={styles.thirdImg} resizeMode="contain" />
       </View>
 
+      {/* Back button and Wash Details title - FIXED */}
+      <View style={styles.sectionHeader}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButtonInline}>
+          <Text style={styles.backText}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.sectionTitleInline}>Was Details</Text>
+      </View>
+
       <ScrollView style={styles.container}>
-        {/* Back button and Wash Details title */}
-        <View style={styles.sectionHeader}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButtonInline}>
-            <Text style={styles.backText}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.sectionTitleInline}>Wash Details</Text>
-        </View>
 
         {/* Wash Details */}
         <View style={styles.detailCard}>
           <View style={styles.detailRow}>
-            <Text style={styles.label}>Date:</Text>
+            <Text style={styles.label}>Datum:</Text>
             <Text style={styles.value}>
-              {new Date(wash.date).toLocaleDateString()} at{" "}
+              {new Date(wash.date).toLocaleDateString()} om{" "}
               {new Date(wash.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
             </Text>
           </View>
-
+          {/* Car Info */}
+          {wash.car && (
+            <View style={styles.detailRow}>
+              <Text style={styles.label}>Auto:</Text>
+              <Text style={styles.value}>
+                {wash.car.brand} {wash.car.model} ({wash.car.licensePlate})
+              </Text>
+            </View>
+          )}
           <View style={styles.detailRow}>
-            <Text style={styles.label}>Duration:</Text>
+            <Text style={styles.label}>Tijdsduur:</Text>
             <Text style={styles.value}>{formatDuration(wash.duration || 0)}</Text>
           </View>
 
           <View style={styles.detailRow}>
-            <Text style={styles.label}>Cost:</Text>
+            <Text style={styles.label}>Muntinworp:</Text>
             <Text style={styles.value}>€{(wash.cost || 0).toFixed(2)}</Text>
           </View>
         </View>
@@ -97,25 +138,21 @@ export default function WashDetailScreen() {
         {/* Programs Used */}
         {wash.programs && wash.programs.length > 0 && (
           <View style={styles.programsCard}>
-            <Text style={styles.sectionTitle}>Programs Used</Text>
+            <Text style={styles.sectionTitle}>Gebruikte programma's</Text>
             <View style={styles.programsGrid}>
               {wash.programs.map((program, index) => (
                 <View key={index} style={styles.programCircle}>
-                  <Text style={styles.programIcon}>{PROGRAM_ICONS[program] || "❔"}</Text>
-                  <Text style={styles.programText}>{program}</Text>
+                  <View style={styles.programIcon}>
+                    <Image 
+                      source={getProgramIcon(program)} 
+                      style={{ width: 32, height: 32 }} 
+                      resizeMode="contain"
+                    />
+                  </View>
+                  <Text style={styles.programText}>{translateProgram(program)}</Text>
                 </View>
               ))}
             </View>
-          </View>
-        )}
-
-        {/* Car Info */}
-        {wash.car && (
-          <View style={styles.carInfo}>
-            <Text style={styles.carLabel}>Car</Text>
-            <Text style={styles.carText}>
-              {wash.car.brand} {wash.car.model} ({wash.car.licensePlate})
-            </Text>
           </View>
         )}
       </ScrollView>
@@ -124,13 +161,14 @@ export default function WashDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#FAFDFF" },
-  backText: { fontSize: 16, color: "#007bff" },
+  container: { flex: 1, backgroundColor: "#FAFDFF" },
+  backText: { fontSize: 16, color: "#5C5C5C" },
   detailCard: {
     backgroundColor: "#E3F5FF",
     borderRadius: 8,
     padding: 16,
     marginBottom: 20,
+    marginHorizontal: 20,
   },
   detailRow: {
     flexDirection: "row",
@@ -139,22 +177,24 @@ const styles = StyleSheet.create({
   },
   label: { fontSize: 16, fontWeight: "600", color: "#0054BB" },
   value: { fontSize: 16, color: "#000", flex: 1, textAlign: "right", fontFamily: 'Urbanist_400Regular' },
-  sectionTitle: { fontSize: 20, fontWeight: "bold", textTransform: 'lowercase', textAlign: 'center', color: '#E3F5FF', marginBottom: 20 },
-  programsCard: { backgroundColor: "#0054BB", borderRadius: 8, padding: 16, marginBottom: 20 },
+  sectionTitle: { fontSize: 20, fontWeight: "bold", textAlign: 'center', color: '#0054BB', marginBottom: 20 },
+  programsCard: {  borderRadius: 8, padding: 16, marginBottom: 20, marginHorizontal: 20 },
   programsGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 12 },
   programCircle: {
+    width: 70,
+    alignItems: "center",
+    margin: 6,
+  },
+  programIcon: {
     width: 70,
     height: 70,
     borderRadius: 35,
     backgroundColor: "#E3F5FF",
     justifyContent: "center",
     alignItems: "center",
-    margin: 6,
-    color: "#0054BB",
+    marginBottom: 4,
   },
-  programIcon: { fontSize: 28, marginBottom: 2 },
-  programText: { fontSize: 10, color: "#0054BB", textAlign: "center" },
-  carInfo: { backgroundColor: "#fff3cd", borderRadius: 8, padding: 16 },
+  programText: { fontSize: 9, color: "#0054BB", textAlign: "center", marginTop: 4 },
   carLabel: { fontSize: 14, color: "#666", marginBottom: 4 },
   carText: { fontSize: 16, fontWeight: "600" },
 
@@ -178,18 +218,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 30,
+    marginBottom: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    backgroundColor: '#FAFDFF',
     position: 'relative',
   },
   backButtonInline: {
     position: 'absolute',
-    left: 0,
+    left: 30,
   },
   sectionTitleInline: {
     fontSize: 20,
     fontWeight: 'bold',
-    textTransform: 'lowercase',
     color: '#5C5C5C',
     textAlign: 'center',
+    width: '80%',
   },
 });

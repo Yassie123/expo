@@ -28,7 +28,7 @@ export default function Index() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#007bff" />
+        <ActivityIndicator size="large" color="#0054BB" />
       </View>
     </SafeAreaView>
   );
