@@ -1,9 +1,17 @@
 import fetcher from "@/data/_fetcher";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
-import {Image, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View, ImageSourcePropType } from "react-native";
 
-const PROGRAMS = [
+// Define types
+interface Program {
+  id: number;
+  name: string;
+  icon: ImageSourcePropType;
+  iconWhite: ImageSourcePropType;
+}
+
+const PROGRAMS: Program[] = [
   { id: 1, name: "Velgen", icon: require("../assets/images/velgen.png"), iconWhite: require("../assets/images/velgenwit.png") },
   { id: 2, name: "Schuimlans", icon: require("../assets/images/schuimlans.png"), iconWhite: require("../assets/images/schuimlanswit.png") },
   { id: 3, name: "HP wassen", icon: require("../assets/images/hpwassen.png"), iconWhite: require("../assets/images/hpwassenwit.png") },
@@ -17,15 +25,15 @@ const PROGRAMS = [
 
 export default function AddWashScreen() {
   const router = useRouter();
-  const { carId } = useLocalSearchParams();
+  const { carId } = useLocalSearchParams<{ carId: string }>();
   
   // Timer states
   const [isRunning, setIsRunning] = useState(false);
   const [duration, setDuration] = useState(0);
-  const intervalRef = useRef(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
   
   // Wash data
-  const [selectedPrograms, setSelectedPrograms] = useState([]);
+  const [selectedPrograms, setSelectedPrograms] = useState<string[]>([]);
   const [coins, setCoins] = useState(0);
   const [loading, setLoading] = useState(false);
 
@@ -47,17 +55,17 @@ export default function AddWashScreen() {
     };
   }, [isRunning]);
 
-  const toggleProgram = (program) => {
+  const toggleProgram = (programName: string) => {
     setSelectedPrograms((prev) => {
-      if (prev.includes(program)) {
-        return prev.filter((p) => p !== program);
+      if (prev.includes(programName)) {
+        return prev.filter((p) => p !== programName);
       } else {
-        return [...prev, program];
+        return [...prev, programName];
       }
     });
   };
 
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
@@ -85,7 +93,7 @@ export default function AddWashScreen() {
 
       Alert.alert("Gelukt", "Wasbeurt voltooid en opgeslagen!");
       router.back();
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error adding wash:", err);
       Alert.alert("Error", err.message || "Something went wrong");
     } finally {
@@ -186,8 +194,14 @@ export default function AddWashScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FAFDFF" },
-  backText: { fontSize: 16, color: "#5C5C5C" },
+  container: { 
+    flex: 1, 
+    backgroundColor: "#FAFDFF" 
+  },
+  backText: { 
+    fontSize: 16, 
+    color: "#5C5C5C" 
+  },
 
   // Hero styles
   heroContainer: {
@@ -199,12 +213,48 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 80,
   },
-  shapedark: { width: '100%', position: 'absolute', top: -40, zIndex: 1 },
-  shapeLeft: { width: '60%', position: 'absolute', right: -20, top: -120, transform: [{ rotate: '-189deg' }], zIndex: 5 },
-  shapeRight: { width: '100%', position: 'absolute', top: -40, transform: [{ rotate: '-17deg' }], zIndex: 4 },
-  orkaImg: { width: 150, height: 150, bottom: -50, left: -90, zIndex: 3 },
-  secondImg: { width: '80%', position: 'absolute', top: -20, left: 10, zIndex: 2 },
-  thirdImg: { width: '0%', position: 'absolute', bottom: -25, right: -80, zIndex: 2 },
+  shapedark: { 
+    width: '100%', 
+    position: 'absolute', 
+    top: -40, 
+    zIndex: 1 
+  },
+  shapeLeft: { 
+    width: '60%', 
+    position: 'absolute', 
+    right: -20, 
+    top: -120, 
+    transform: [{ rotate: '-189deg' }], 
+    zIndex: 5 
+  },
+  shapeRight: { 
+    width: '100%', 
+    position: 'absolute', 
+    top: -40, 
+    transform: [{ rotate: '-17deg' }], 
+    zIndex: 4 
+  },
+  orkaImg: { 
+    width: 150, 
+    height: 150, 
+    bottom: -50, 
+    left: -90, 
+    zIndex: 3 
+  },
+  secondImg: { 
+    width: '80%', 
+    position: 'absolute', 
+    top: -20, 
+    left: 10, 
+    zIndex: 2 
+  },
+  thirdImg: { 
+    width: '0%', 
+    position: 'absolute', 
+    bottom: -25, 
+    right: -80, 
+    zIndex: 2 
+  },
 
   // Header
   sectionHeader: {
@@ -238,7 +288,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
   },
   timerLabel: { 
-     fontSize: 16, 
+    fontSize: 16, 
     fontWeight: "600", 
     marginBottom: 8, 
     textAlign: "center",
@@ -258,7 +308,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     borderRadius: 8,
   },
-  timerButtonPause: { backgroundColor: "#0054BB" },
+  timerButtonPause: { 
+    backgroundColor: "#0054BB" 
+  },
   timerButtonText: { 
     color: "#fff", 
     fontSize: 16, 
@@ -282,7 +334,11 @@ const styles = StyleSheet.create({
     color: "#0054BB",
     fontFamily: 'Urbanist_600SemiBold'
   },
-  coinsRow: { flexDirection: "row", alignItems: "center", justifyContent: "center" },
+  coinsRow: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "center" 
+  },
   coinButton: {
     backgroundColor: "#0054BB",
     width: 50,
@@ -291,8 +347,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  coinButtonText: { fontSize: 28, color: "#fff", fontWeight: "bold" },
-  coinsDisplay: { marginHorizontal: 24, alignItems: "center" },
+  coinButtonText: { 
+    fontSize: 28, 
+    color: "#fff", 
+    fontWeight: "bold" 
+  },
+  coinsDisplay: { 
+    marginHorizontal: 24, 
+    alignItems: "center" 
+  },
   coinsNumber: { 
     fontSize: 32, 
     fontWeight: "bold", 
@@ -360,7 +423,9 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     marginHorizontal: 20,
   },
-  completeButtonDisabled: { backgroundColor: "#ccc" },
+  completeButtonDisabled: { 
+    backgroundColor: "#ccc" 
+  },
   completeButtonText: { 
     color: "#fff", 
     fontSize: 18, 
