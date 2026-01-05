@@ -1,15 +1,35 @@
 import fetcher from "@/data/_fetcher";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View, ImageSourcePropType } from "react-native";
+
+// Define types
+interface Car {
+  _id: string;
+  brand: string;
+  model: string;
+  licensePlate: string;
+}
+
+interface Wash {
+  _id: string;
+  date: string;
+  duration?: number;
+  cost?: number;
+  programs?: string[];
+  car?: Car;
+}
+
+type ProgramIconMap = Record<string, ImageSourcePropType>;
+type ProgramTranslationMap = Record<string, string>;
 
 export default function WashDetailScreen() {
   const router = useRouter();
-  const { washId } = useLocalSearchParams();
-  const [wash, setWash] = useState(null);
+  const { washId } = useLocalSearchParams<{ washId: string }>();
+  const [wash, setWash] = useState<Wash | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const PROGRAM_ICONS = {
+  const PROGRAM_ICONS: ProgramIconMap = {
     // Dutch names (keeping for compatibility)
     Velgen: require("../assets/images/velgen.png"),
     Schuimlans: require("../assets/images/schuimlans.png"),
@@ -33,8 +53,22 @@ export default function WashDetailScreen() {
     "Air Dry": require("../assets/images/drogen.png"),
   };
 
+  const PROGRAM_TRANSLATIONS: ProgramTranslationMap = {
+    "Pre-Wash": "HP wassen",
+    "Soap": "Schuimlans",
+    "Brush": "Schuimborstel",
+    "High Pressure": "HP spoelen",
+    "Wax": "Wax",
+    "Rinse": "HP spoelen",
+    "Foam": "Schuimlans",
+    "Tire Cleaner": "Velgen",
+    "Spot Free": "Vlekvrij spoelen",
+    "Air Dry": "Drogen",
+  };
+
   useEffect(() => {
     fetchWash();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [washId]);
 
   const fetchWash = async () => {
@@ -48,31 +82,18 @@ export default function WashDetailScreen() {
     }
   };
 
-  const formatDuration = (seconds) => {
+  const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}m ${secs}s`;
   };
 
-  const PROGRAM_TRANSLATIONS = {
-    "Pre-Wash": "HP wassen",
-    "Soap": "Schuimlans",
-    "Brush": "Schuimborstel",
-    "High Pressure": "HP spoelen",
-    "Wax": "Wax",
-    "Rinse": "HP spoelen",
-    "Foam": "Schuimlans",
-    "Tire Cleaner": "Velgen",
-    "Spot Free": "Vlekvrij spoelen",
-    "Air Dry": "Drogen",
-  };
-
-  const getProgramIcon = (programName) => {
+  const getProgramIcon = (programName: string): ImageSourcePropType => {
     // Return the icon if it exists, otherwise return a default
     return PROGRAM_ICONS[programName] || PROGRAM_ICONS["HP wassen"];
   };
 
-  const translateProgram = (programName) => {
+  const translateProgram = (programName: string): string => {
     return PROGRAM_TRANSLATIONS[programName] || programName;
   };
 
@@ -161,8 +182,14 @@ export default function WashDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#FAFDFF" },
-  backText: { fontSize: 16, color: "#5C5C5C" },
+  container: { 
+    flex: 1, 
+    backgroundColor: "#FAFDFF" 
+  },
+  backText: { 
+    fontSize: 16, 
+    color: "#5C5C5C" 
+  },
   detailCard: {
     backgroundColor: "#E3F5FF",
     borderRadius: 8,
@@ -175,11 +202,37 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 12,
   },
-  label: { fontSize: 16, fontWeight: "600", color: "#0054BB" },
-  value: { fontSize: 16, color: "#000", flex: 1, textAlign: "right", fontFamily: 'Urbanist_400Regular' },
-  sectionTitle: { fontSize: 20, fontWeight: "bold", textAlign: 'center', color: '#0054BB', marginBottom: 20 },
-  programsCard: {  borderRadius: 8, padding: 16, marginBottom: 20, marginHorizontal: 20 },
-  programsGrid: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 12 },
+  label: { 
+    fontSize: 16, 
+    fontWeight: "600", 
+    color: "#0054BB" 
+  },
+  value: { 
+    fontSize: 16, 
+    color: "#000", 
+    flex: 1, 
+    textAlign: "right", 
+    fontFamily: 'Urbanist_400Regular' 
+  },
+  sectionTitle: { 
+    fontSize: 20, 
+    fontWeight: "bold", 
+    textAlign: 'center', 
+    color: '#0054BB', 
+    marginBottom: 20 
+  },
+  programsCard: {  
+    borderRadius: 8, 
+    padding: 16, 
+    marginBottom: 20, 
+    marginHorizontal: 20 
+  },
+  programsGrid: { 
+    flexDirection: "row", 
+    flexWrap: "wrap", 
+    justifyContent: "center", 
+    gap: 12 
+  },
   programCircle: {
     width: 70,
     alignItems: "center",
@@ -194,9 +247,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 4,
   },
-  programText: { fontSize: 9, color: "#0054BB", textAlign: "center", marginTop: 4 },
-  carLabel: { fontSize: 14, color: "#666", marginBottom: 4 },
-  carText: { fontSize: 16, fontWeight: "600" },
+  programText: { 
+    fontSize: 9, 
+    color: "#0054BB", 
+    textAlign: "center", 
+    marginTop: 4 
+  },
+  carLabel: { 
+    fontSize: 14, 
+    color: "#666", 
+    marginBottom: 4 
+  },
+  carText: { 
+    fontSize: 16, 
+    fontWeight: "600" 
+  },
 
   // Hero styles
   heroContainer: {
@@ -208,12 +273,48 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 80,
   },
-  shapedark: { width: '100%', position: 'absolute', top: -40, zIndex: 1 },
-  shapeLeft: { width: '60%', position: 'absolute', right: -20, top: -120, transform: [{ rotate: '-189deg' }], zIndex: 5 },
-  shapeRight: { width: '100%', position: 'absolute', top: -40, transform: [{ rotate: '-17deg' }], zIndex: 4 },
-  orkaImg: { width: 150, height: 150, bottom: -50, left: -90, zIndex: 3 },
-  secondImg: { width: '80%', position: 'absolute', top: -20, left: 10, zIndex: 2 },
-  thirdImg: { width: '0%', position: 'absolute', bottom: -25, right: -80, zIndex: 2 },
+  shapedark: { 
+    width: '100%', 
+    position: 'absolute', 
+    top: -40, 
+    zIndex: 1 
+  },
+  shapeLeft: { 
+    width: '60%', 
+    position: 'absolute', 
+    right: -20, 
+    top: -120, 
+    transform: [{ rotate: '-189deg' }], 
+    zIndex: 5 
+  },
+  shapeRight: { 
+    width: '100%', 
+    position: 'absolute', 
+    top: -40, 
+    transform: [{ rotate: '-17deg' }], 
+    zIndex: 4 
+  },
+  orkaImg: { 
+    width: 150, 
+    height: 150, 
+    bottom: -50, 
+    left: -90, 
+    zIndex: 3 
+  },
+  secondImg: { 
+    width: '80%', 
+    position: 'absolute', 
+    top: -20, 
+    left: 10, 
+    zIndex: 2 
+  },
+  thirdImg: { 
+    width: '0%', 
+    position: 'absolute', 
+    bottom: -25, 
+    right: -80, 
+    zIndex: 2 
+  },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
